@@ -11,6 +11,22 @@
 
 **Note:** the `/media` folders have been removed from the repo due to the size. Download them yourself and copy to the right location.
 
+Data can be loaded as follows:
+```python
+# Provide the directory path containing instances.
+# Needs to include: instances.jsonl, truth.jsonl and /media folder.
+small_dataset = Dataset("datasets/small_training")
+```
+To get an overview of the dataset: `small_dataset.print_summary()`, which outputs:
+```bash
+--- Dataset Summary --
+Directory: datasets/small_training
+Amount of elements: 2459
+Percentage clickbait: 30.98820658804392
+Percentage non-clickbait: 69.01179341195608
+----------------------
+```
+
 ## PART 1:
 * Read data
 * Feature extraction
