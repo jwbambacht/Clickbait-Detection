@@ -1,5 +1,6 @@
 from dataset import Dataset
 
+
 # Import the small and big dataset.
 small_dataset = Dataset("datasets/small_training")
 big_dataset = Dataset("datasets/big_training")

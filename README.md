@@ -1,7 +1,12 @@
 # Clickbait-Detection
 
 ## Requirements
-
+| Name        | Version | Install                   | Description                      |
+|-------------|---------|---------------------------|----------------------------------|
+| pytesseract | 0.3.2   | `pip install pytesseract` | 'Reads' text embedded in images. |
+|             |         |                           |                                  |
+|             |         |                           |                                  |
+`pytesseract` version `0.3.2`
 ## Data
 
 | Filename | Location | # posts |  % clickbait | Download link |
@@ -26,6 +31,14 @@ Percentage clickbait: 30.98820658804392
 Percentage non-clickbait: 69.01179341195608
 ----------------------
 ```
+
+### Features
+| # | Name          | Description                            |
+|---|---------------|----------------------------------------|
+| 1 | `has_image()` | Checks if post has an image available. |
+| 2 |               |                                        |
+|   |               |                                        |
+
 
 ## PART 1:
 * Read data

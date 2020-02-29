@@ -115,8 +115,11 @@ class Element:
     ## FEATURE EXTRACTION
 
     # Feature 1
+    #
     def __has_image(self):
         return int(len(self.post_media) >= 1)
+
+    #
 
     # Print this element.
     def pretty_print(self, verbose=False):
