@@ -4,9 +4,6 @@
 | Name        | Version | Install                   | Description                      |
 |-------------|---------|---------------------------|----------------------------------|
 | pytesseract | 0.3.2   | `pip install pytesseract` | 'Reads' text embedded in images. |
-|             |         |                           |                                  |
-|             |         |                           |                                  |
-`pytesseract` version `0.3.2`
 ## Data
 
 | Filename | Location | # posts |  % clickbait | Download link |
@@ -36,8 +33,7 @@ Percentage non-clickbait: 69.01179341195608
 | # | Name          | Description                            |
 |---|---------------|----------------------------------------|
 | 1 | `has_image()` | Checks if post has an image available. |
-| 2 |               |                                        |
-|   |               |                                        |
+| 2 | `has_image_text()`| Checks if a post image has text.   |
 
 
 ## PART 1:
