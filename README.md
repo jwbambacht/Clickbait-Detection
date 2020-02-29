@@ -3,7 +3,7 @@
 ## Requirements
 | Name        | Version | Install                   | Description                      |
 |-------------|---------|---------------------------|----------------------------------|
-| pytesseract | 0.3.2   | `pip install pytesseract` | 'Reads' text embedded in images. |
+| pytesseract | 0.3.2   | `pip install pytesseract` | 'Reads' text embedded in images. This also requires tesseract to be installed on your system and in your PATH. This library is only used to annotate the images in `annotate_images.py`, results are already saved (see: `media_annotations.jsonl`).|
 ## Data
 
 | Filename | Location | # posts |  % clickbait | Download link |
