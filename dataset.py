@@ -1,4 +1,7 @@
 import json
+import os
+import re
+
 
 # Stores a set of instances and its label (clickbait or not).
 class Dataset:
@@ -6,7 +9,9 @@ class Dataset:
         self.directory = directory
         self.instances_file = directory + "/instances.jsonl"
         self.truth_file = directory + "/truth.jsonl"
+        self.media_annotations_file = directory + "/media_annotations.jsonl"
         self.elements = {}
+        self.media_annotations = {}
 
         self.__load_instances()
 
@@ -19,6 +24,22 @@ class Dataset:
         for t in self.read_data(self.truth_file):
             truth = self.parse_truth(t)
             self.elements[truth.element_id].set_truth(truth)
+
+        # If media annotations don't exist, ignore it.
+        if not os.path.exists(self.media_annotations_file):
+            return
+
+        # Add media annotations.
+        for m in self.read_data(self.media_annotations_file):
+            self.media_annotations[m["id"]] = m
+
+        # Make sure elements retrieve their own annotations.
+        for el in self.get_elements():
+            if len(el.post_media) > 0:
+                el.set_image_annotations(self.media_annotations)
+
+
+
 
     # Reads jsonl file.
     @staticmethod
@@ -100,6 +121,8 @@ class Element:
         self.target_paragraphs = target_paragraphs
         self.target_captions = target_captions
         self.__truth = None
+        self.__media_text_present = [False] * len(self.post_media)
+        self.__media_text = [""] * len(self.post_media)
 
     # Set the truth of this element.
     def set_truth(self, truth):
@@ -112,10 +135,21 @@ class Element:
 
         return self.__truth
 
+    # Set an image annotation.
+    def set_image_annotations(self, annotations):
+        for m in self.post_media: # All media.
+            index = self.post_media.index(m)
+            annotation = annotations[m.replace("media/", "")]
+
+            # Update annotation.
+            self.__media_text_present[index] = annotation["has_text"]
+            self.__media_text[index] = annotation["text"]
+
+
+
     ## FEATURE EXTRACTION
 
     # Feature 1
-    #
     def __has_image(self):
         return int(len(self.post_media) >= 1)
 
