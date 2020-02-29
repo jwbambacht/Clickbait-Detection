@@ -38,9 +38,6 @@ class Dataset:
             if len(el.post_media) > 0:
                 el.set_image_annotations(self.media_annotations)
 
-
-
-
     # Reads jsonl file.
     @staticmethod
     def read_data(file):
@@ -97,6 +94,7 @@ class Dataset:
         print(f"Percentage non-clickbait: {100 - clickbait_perc}")
         print("----------------------")
 
+
 # Stores an instance/sample with all its metadata and correct label.
 class Element:
     def __init__(
@@ -137,15 +135,13 @@ class Element:
 
     # Set an image annotation.
     def set_image_annotations(self, annotations):
-        for m in self.post_media: # All media.
+        for m in self.post_media:  # All media.
             index = self.post_media.index(m)
             annotation = annotations[m.replace("media/", "")]
 
             # Update annotation.
             self.__media_text_present[index] = annotation["has_text"]
             self.__media_text[index] = annotation["text"]
-
-
 
     ## FEATURE EXTRACTION
 
