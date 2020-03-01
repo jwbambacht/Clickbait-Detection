@@ -10,5 +10,6 @@ small_dataset.print_summary()
 # big_dataset.print_summary()
 
 # Print the 10th element of both datasets.
-small_dataset.get_elements()[10].pretty_print(verbose=True)
+print(small_dataset.get_elements()[10].get_features().shape)
+print(small_dataset.get_features().shape)
 # big_dataset.get_elements()[10].pretty_print(verbose=True)

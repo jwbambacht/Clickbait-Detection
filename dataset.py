@@ -94,6 +94,11 @@ class Dataset:
             t["truthClass"],
         )
 
+    def get_features(self):
+        arrays = [el.get_features() for el in self.get_elements()]
+        return np.stack(arrays, axis=0)
+
+
     # Returns the amount of elements in the dataset.
     def amount_of_elements(self):
         return len(self.elements)
@@ -206,7 +211,7 @@ class Element:
     def __target_paragraphs_len(self):
         return self.__zero_check(self.__sum_list(self.target_paragraphs, len))
 
-    # Feature 10 - 31
+    # Feature 10 - 30
     def __diff_num_of_characters(self):
         chars = self.__list_chars()
 
@@ -216,7 +221,7 @@ class Element:
 
         return diff
 
-    # Feature 32 - 53
+    # Feature 31 - 51
     def __num_of_characters_ratio(self):
         chars = self.__list_chars()
 
@@ -229,41 +234,41 @@ class Element:
 
         return ratio
 
-    # Feature 54
+    # Feature 52
     def __post_title_word_count(self):
         return self.__zero_check(self.__sum_list(self.post_text, self.__count_words))
 
-    # Feature 55
+    # Feature 53
     def __text_in_media_word_count(self):
         return self.__zero_check(self.__sum_list(self.__media_text, self.__count_words))
 
-    # Feature 56
+    # Feature 54
     def __target_title_word_count(self):
         return self.__zero_check(self.__count_words(self.target_title))
 
-    # Feature 57
+    # Feature 55
     def __target_description_word_count(self):
         return self.__zero_check(self.__count_words(self.target_description))
 
-    # Feature 58
+    # Feature 56
     def __target_keywords_word_count(self):
         return self.__zero_check(
             self.__sum_list(self.target_keywords, self.__count_words)
         )
 
-    # Feature 59
+    # Feature 57
     def __target_captions_word_count(self):
         return self.__zero_check(
             self.__sum_list(self.target_captions, self.__count_words)
         )
 
-    # Feature 60
+    # Feature 58
     def __target_paragraphs_word_count(self):
         return self.__zero_check(
             self.__sum_list(self.target_paragraphs, self.__count_words)
         )
 
-    # Feature 61 - 82
+    # Feature 59 - 79
     def __diff_num_of_words(self):
         words = self.__list_words()
 
@@ -273,7 +278,7 @@ class Element:
 
         return diff
 
-    # Feature 83 - 104
+    # Feature 80 - 100
     def __num_of_words_ratio(self):
         words = self.__list_words()
 
@@ -286,8 +291,8 @@ class Element:
 
         return ratio
 
-    # Feature 105 - 111
-    def num_common_keywords_article(self):
+    # Feature 101 - 106
+    def __num_common_keywords_article(self):
         keywords = set(
             [
                 el.strip()
@@ -315,7 +320,7 @@ class Element:
 
         return overlap
 
-    # Feature 112 to 119
+    # Feature 107 to 113
     def __num_of_formal_words(self):
         words = [
             self.post_text,
@@ -338,7 +343,7 @@ class Element:
 
         return num_words
 
-    # Feature 120 to 127
+    # Feature 114 to 120
     def __num_of_informal_words(self):
         words = [
             self.post_text,
@@ -361,7 +366,7 @@ class Element:
 
         return num_words
 
-    # Feature 128 to 135
+    # Feature 121 to 127
     def __ratio_formal_words(self):
         formal_words = self.__num_of_formal_words()
         informal_words = self.__num_of_informal_words()
@@ -376,7 +381,7 @@ class Element:
 
         return formal_ratio
 
-    # Feature 136 to 143
+    # Feature 127 to 134
     def __ratio_informal_words(self):
         formal_words = self.__num_of_formal_words()
         informal_words = self.__num_of_informal_words()
@@ -391,21 +396,21 @@ class Element:
 
         return informal_ratio
 
-    # Feature 144
+    # Feature 135
     def __num_of_at(self):
         return self.__count_element_in_post("@")
 
-    # Feature 145
+    # Feature 136
     def __num_of_hashtags(self):
         return self.__count_element_in_post("#")
 
-    # Feature 146
+    # Feature 137
     def __num_of_retweets(self):
         return self.__count_element_in_post("RT") + self.__count_element_in_post(
             "retweet"
         )
 
-    # Feature 147
+    # Feature 138
     def __num_of_additional_symbols(self):
         return (
             self.__count_element_in_post("\?")
@@ -414,19 +419,58 @@ class Element:
             + self.__count_element_in_post("\.\.\.")
         )
 
-    # Feature 148
-    def num_of_keywords(self):
+    # Feature 139
+    def __num_of_keywords(self):
         return len(self.target_keywords)
 
-    # Feature 149
-    def num_of_paragraphs(self):
+    # Feature 140
+    def __num_of_paragraphs(self):
         return len(self.target_paragraphs)
 
-    # Feature 150
-    def num_of_captions(self):
-        return len(self.num_of_captions())
+    # Feature 141
+    def __num_of_captions(self):
+        return len(self.target_captions)
 
     # END - FEATURE EXTRACTION
+
+    # Get features as numpy array.
+    def get_features(self):
+        return np.hstack(
+            [
+                self.__has_image(),
+                self.__has_image_text(),
+                self.__post_title_len(),
+                self.__text_in_media_len(),
+                self.__target_title_len(),
+                self.__target_description_len(),
+                self.__target_keywords_len(),
+                self.__target_captions_len(),
+                self.__target_paragraphs_len(),
+                self.__diff_num_of_characters(),
+                self.__num_of_characters_ratio(),
+                self.__post_title_word_count(),
+                self.__text_in_media_word_count(),
+                self.__target_title_word_count(),
+                self.__target_description_word_count(),
+                self.__target_keywords_word_count(),
+                self.__target_captions_word_count(),
+                self.__target_paragraphs_word_count(),
+                self.__diff_num_of_words(),
+                self.__num_of_words_ratio(),
+                self.__num_common_keywords_article(),
+                self.__num_of_formal_words(),
+                self.__num_of_informal_words(),
+                self.__ratio_formal_words(),
+                self.__ratio_informal_words(),
+                self.__num_of_at(),
+                self.__num_of_hashtags(),
+                self.__num_of_retweets(),
+                self.__num_of_additional_symbols(),
+                self.__num_of_keywords(),
+                self.__num_of_paragraphs(),
+                self.__num_of_captions(),
+            ]
+        )
 
     # Returns -1 if value is equal to 0.
     def __zero_check(self, value):
@@ -461,6 +505,7 @@ class Element:
 
         return count
 
+    # Retrieves all words from the article.
     def get_all_words(self):
         words = [
             self.post_text,
