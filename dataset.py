@@ -94,10 +94,28 @@ class Dataset:
             t["truthClass"],
         )
 
-    def get_features(self):
+    # Get features of the whole dataset.
+    def get_features(self, overwrite=False):
+        path = self.directory + "/features.npy"
+        if os.path.exists(path) and not overwrite:
+            print(
+                "Loading from file! If you want to overwrite the features, use overwrite = True."
+            )
+            return np.load(path)
+
+        # Get all features.
         arrays = [el.get_features() for el in self.get_elements()]
+        np_array = np.stack(arrays, axis=0)
+
+        # Save to file.
+        np.save(path, np_array)
+
         return np.stack(arrays, axis=0)
 
+    # Get all target labels.
+    def get_target_labels(self):
+        targets = [el.get_truth().is_clickbait() for el in self.get_elements()]
+        return np.array(targets)
 
     # Returns the amount of elements in the dataset.
     def amount_of_elements(self):
