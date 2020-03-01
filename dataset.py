@@ -1,6 +1,10 @@
 import json
 import os
 import re
+from itertools import combinations
+import enchant
+from operator import add
+import numpy as np
 
 
 # Stores a set of instances and its label (clickbait or not).
@@ -12,8 +16,10 @@ class Dataset:
         self.media_annotations_file = directory + "/media_annotations.jsonl"
         self.elements = {}
         self.media_annotations = {}
+        self.word_dict = {}
 
         self.__load_instances()
+        self.__build_dictionary()
 
     # Loads the element instances and its truths.
     def __load_instances(self):
@@ -37,6 +43,22 @@ class Dataset:
         for el in self.get_elements():
             if len(el.post_media) > 0:
                 el.set_image_annotations(self.media_annotations)
+
+    def __build_dictionary(self):
+        all_words = []
+        for el in self.get_elements():
+            all_words += el.get_all_words()
+
+        # Remove duplicates
+        all_words = list(set(all_words))
+
+        # Add words to dictionary with True or False. True if valid, otherwise False.
+        for w in all_words:
+            d = enchant.Dict("en_US")
+            self.word_dict[w] = d.check(w)
+
+        for el in self.get_elements():
+            el.word_dict = self.word_dict
 
     # Reads jsonl file.
     @staticmethod
@@ -118,6 +140,7 @@ class Element:
         self.target_keywords = target_keywords
         self.target_paragraphs = target_paragraphs
         self.target_captions = target_captions
+        self.word_dict = {}
         self.__truth = None
         self.__media_text_present = [False] * len(self.post_media)
         self.__media_text = [""] * len(self.post_media)
@@ -143,25 +166,357 @@ class Element:
             self.__media_text_present[index] = annotation["has_text"]
             self.__media_text[index] = annotation["text"]
 
-    ## FEATURE EXTRACTION
-
+    # START - FEATURE EXTRACTION
     # Feature 1
     def __has_image(self):
         return int(len(self.post_media) >= 1)
 
-    #
+    # Feature 2
+    def __has_image_text(self):
+        if not bool(self.__has_image()):
+            return 0
+        else:
+            return int(True in self.__media_text_present)
+
+    # Feature 3
+    def __post_title_len(self):
+        return self.__zero_check(self.__sum_list(self.post_text, len))
+
+    # Feature 4
+    def __text_in_media_len(self):
+        return self.__zero_check(self.__sum_list(self.__media_text, len))
+
+    # Feature 5
+    def __target_title_len(self):
+        return self.__zero_check(len(self.target_title))
+
+    # Feature 6
+    def __target_description_len(self):
+        return self.__zero_check(len(self.target_description))
+
+    # Feature 7
+    def __target_keywords_len(self):
+        return self.__zero_check(self.__sum_list(self.target_keywords, len))
+
+    # Feature 8
+    def __target_captions_len(self):
+        return self.__zero_check(self.__sum_list(self.target_captions, len))
+
+    # Feature 9
+    def __target_paragraphs_len(self):
+        return self.__zero_check(self.__sum_list(self.target_paragraphs, len))
+
+    # Feature 10 - 31
+    def __diff_num_of_characters(self):
+        chars = self.__list_chars()
+
+        diff = []
+        for (charA, charB) in combinations(chars, 2):
+            diff.append(abs(charA() - charB()))
+
+        return diff
+
+    # Feature 32 - 53
+    def __num_of_characters_ratio(self):
+        chars = self.__list_chars()
+
+        ratio = []
+        for (charA, charB) in combinations(chars, 2):
+            if charA() is -1 or charB() is -1:
+                ratio.append(-1)
+            else:
+                ratio.append(abs(charA() / charB()))
+
+        return ratio
+
+    # Feature 54
+    def __post_title_word_count(self):
+        return self.__zero_check(self.__sum_list(self.post_text, self.__count_words))
+
+    # Feature 55
+    def __text_in_media_word_count(self):
+        return self.__zero_check(self.__sum_list(self.__media_text, self.__count_words))
+
+    # Feature 56
+    def __target_title_word_count(self):
+        return self.__zero_check(self.__count_words(self.target_title))
+
+    # Feature 57
+    def __target_description_word_count(self):
+        return self.__zero_check(self.__count_words(self.target_description))
+
+    # Feature 58
+    def __target_keywords_word_count(self):
+        return self.__zero_check(
+            self.__sum_list(self.target_keywords, self.__count_words)
+        )
+
+    # Feature 59
+    def __target_captions_word_count(self):
+        return self.__zero_check(
+            self.__sum_list(self.target_captions, self.__count_words)
+        )
+
+    # Feature 60
+    def __target_paragraphs_word_count(self):
+        return self.__zero_check(
+            self.__sum_list(self.target_paragraphs, self.__count_words)
+        )
+
+    # Feature 61 - 82
+    def __diff_num_of_words(self):
+        words = self.__list_words()
+
+        diff = []
+        for (wordA, wordB) in combinations(words, 2):
+            diff.append(abs(wordA() - wordB()))
+
+        return diff
+
+    # Feature 83 - 104
+    def __num_of_words_ratio(self):
+        words = self.__list_words()
+
+        ratio = []
+        for (wordA, wordB) in combinations(words, 2):
+            if wordA() is -1 or wordB() is -1:
+                ratio.append(-1)
+            else:
+                ratio.append(abs(wordA() / wordB()))
+
+        return ratio
+
+    # Feature 105 - 111
+    def num_common_keywords_article(self):
+        keywords = set(
+            [
+                el.strip()
+                for el in re.findall(r"\w+", " ".join(self.target_keywords.split(",")))
+            ]
+        )
+        words = [
+            self.post_text,
+            self.__media_text,
+            self.target_title,
+            self.target_description,
+            self.target_captions,
+            self.target_paragraphs,
+        ]
+
+        overlap = []
+
+        for w in words:
+            if isinstance(w, list):
+                all_words = [el.strip() for el in re.findall(r"\w+", " ".join(w))]
+            else:
+                all_words = [el.strip() for el in re.findall(r"\w+", w)]
+
+            overlap.append(len(keywords.difference(set(all_words))))
+
+        return overlap
+
+    # Feature 112 to 119
+    def __num_of_formal_words(self):
+        words = [
+            self.post_text,
+            self.__media_text,
+            self.target_title,
+            self.target_description,
+            self.target_captions,
+            self.target_keywords,
+            self.target_paragraphs,
+        ]
+
+        num_words = []
+        for w in words:
+            if isinstance(w, list):
+                distinct_words = set(re.findall(r"\w+", " ".join(w)))
+            else:
+                distinct_words = set(re.findall(r"\w+", w))
+
+            num_words.append(sum([self.word_dict[word] for word in distinct_words]))
+
+        return num_words
+
+    # Feature 120 to 127
+    def __num_of_informal_words(self):
+        words = [
+            self.post_text,
+            self.__media_text,
+            self.target_title,
+            self.target_description,
+            self.target_captions,
+            self.target_keywords,
+            self.target_paragraphs,
+        ]
+
+        num_words = []
+        for w in words:
+            if isinstance(w, list):
+                distinct_words = set(re.findall(r"\w+", " ".join(w)))
+            else:
+                distinct_words = set(re.findall(r"\w+", w))
+
+            num_words.append(sum([not self.word_dict[word] for word in distinct_words]))
+
+        return num_words
+
+    # Feature 128 to 135
+    def __ratio_formal_words(self):
+        formal_words = self.__num_of_formal_words()
+        informal_words = self.__num_of_informal_words()
+        total_words = map(add, formal_words, informal_words)
+
+        formal_ratio = []
+        for formal, total in zip(formal_words, total_words):
+            if total is 0:
+                formal_ratio.append(0)
+                continue
+            formal_ratio.append(formal / total)
+
+        return formal_ratio
+
+    # Feature 136 to 143
+    def __ratio_informal_words(self):
+        formal_words = self.__num_of_formal_words()
+        informal_words = self.__num_of_informal_words()
+        total_words = map(add, formal_words, informal_words)
+
+        informal_ratio = []
+        for informal, total in zip(informal_words, total_words):
+            if total is 0:
+                informal_ratio.append(0)
+                continue
+            informal_ratio.append(informal / total)
+
+        return informal_ratio
+
+    # Feature 144
+    def __num_of_at(self):
+        return self.__count_element_in_post("@")
+
+    # Feature 145
+    def __num_of_hashtags(self):
+        return self.__count_element_in_post("#")
+
+    # Feature 146
+    def __num_of_retweets(self):
+        return self.__count_element_in_post("RT") + self.__count_element_in_post(
+            "retweet"
+        )
+
+    # Feature 147
+    def __num_of_additional_symbols(self):
+        return (
+            self.__count_element_in_post("\?")
+            + self.__count_element_in_post("\,")
+            + self.__count_element_in_post("\:")
+            + self.__count_element_in_post("\.\.\.")
+        )
+
+    # Feature 148
+    def num_of_keywords(self):
+        return len(self.target_keywords)
+
+    # Feature 149
+    def num_of_paragraphs(self):
+        return len(self.target_paragraphs)
+
+    # Feature 150
+    def num_of_captions(self):
+        return len(self.num_of_captions())
+
+    # END - FEATURE EXTRACTION
+
+    # Returns -1 if value is equal to 0.
+    def __zero_check(self, value):
+        return -1 if value is 0 else value
+
+    # Returns the sum of the length of the characters in a list.
+    def __sum_list(self, list, fun):
+        return sum(map(lambda x: fun(x), list))
+
+    # Count amount of words in string.
+    def __count_words(self, str):
+        return len(re.findall(r"\w+", str))
+
+    # Counts an element occurence in a post.
+    def __count_element_in_post(self, element):
+        words = [
+            self.post_text,
+            self.__media_text,
+            self.target_title,
+            self.target_description,
+            self.target_captions,
+            self.target_keywords,
+            self.target_paragraphs,
+        ]
+
+        count = 0
+        for w in words:
+            if isinstance(w, list):
+                w = " ".join(w)
+
+            count += len(re.findall(rf"{element}", w))
+
+        return count
+
+    def get_all_words(self):
+        words = [
+            self.post_text,
+            self.__media_text,
+            self.target_title,
+            self.target_description,
+            self.target_captions,
+            self.target_keywords,
+            self.target_paragraphs,
+        ]
+
+        all_words = []
+
+        for w in words:
+            if isinstance(w, list):
+                all_words += [el.strip() for el in re.findall(r"\w+", " ".join(w))]
+            else:
+                all_words += [el.strip() for el in re.findall(r"\w+", w)]
+
+        # Remove duplicates.
+        return list(set(all_words))
+
+    # Function handles to all character lengths.
+    def __list_chars(self):
+        return [
+            self.__post_title_len,
+            self.__text_in_media_len,
+            self.__target_title_len,
+            self.__target_description_len,
+            self.__target_keywords_len,
+            self.__target_captions_len,
+            self.__target_paragraphs_len,
+        ]
+
+    def __list_words(self):
+        return [
+            self.__post_title_word_count,
+            self.__text_in_media_word_count,
+            self.__target_title_word_count,
+            self.__target_description_word_count,
+            self.__target_keywords_word_count,
+            self.__target_captions_word_count,
+            self.__target_paragraphs_word_count,
+        ]
 
     # Print this element.
     def pretty_print(self, verbose=False):
         print("-- Element --")
         print(f"id: {self.element_id}")
-        print(f"title: {self.target_title}")
+        print(f"post_title: {self.post_text}")
         print(f"timestamp: {self.timestamp}")
         print(f"is_clickbait: {bool(self.get_truth().is_clickbait())}")
 
         if verbose:
-            print(f"post_text: {self.post_text}")
             print(f"post_media: {self.post_media}")
+            print(f"target_title: {self.target_title}")
             print(f"target_description: {self.target_description}")
             print(f"target_keywords: {self.target_keywords}")
             print(f"target_paragraphs: {self.target_paragraphs}")
