@@ -33,8 +33,8 @@ Percentage non-clickbait: 69.01179341195608
 ```
 
 ### Features
-| # &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;    | Name          | Description                            |
-|-------|---------------|---------------------------------|
+| # &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;    | Name          | Description                            |
+|:-------:|:---------------:|:---------------------------------:|
 | 1 | Image availability | Checks if post has an image available. |
 | 2 | Image text availability | Checks if a post image has text.   |
 | 3-9 | Length of article content | Counts amount of characters in the `post_title`, `media_text`, `target_title`, `target_description`, `target_keywords`, `target_captions` and `target_paragraphs` fields.| 
