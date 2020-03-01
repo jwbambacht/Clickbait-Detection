@@ -12,7 +12,8 @@
 |----------|----------|---------------|----|----|
 |  clickbait17-train-170331.zip        |  [/datasets/big_training](/datasets/big_training)        |      19538         | 24.4% | [link](http://www.uni-weimar.de/medien/webis/corpora/corpus-webis-clickbait-17/clickbait17-train-170331.zip)|
 |   clickbait17-train-170630.zip       |   [/datasets/small_training](/datasets/small_training)       |       2495        | 30.1% | [link](http://www.uni-weimar.de/medien/webis/corpora/corpus-webis-clickbait-17/clickbait17-train-170630.zip)|
-~~~~
+
+
 **Note:** the `/media` folders have been removed from the repo due to the size. Download them yourself and copy to the right location.
 
 Data can be loaded as follows:
