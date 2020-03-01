@@ -5,7 +5,7 @@
 |-------------|---------|---------------------------|----------------------------------|
 | pytesseract | 0.3.2   | `pip install pytesseract` | 'Reads' text embedded in images. This also requires tesseract to be installed on your system and in your PATH. This library is only used to annotate the images in `annotate_images.py`, results are already saved (see: `media_annotations.jsonl`).|
 | pyenchant | 2.0.0  | `pip install pyenchant`| Used to identify the formality of words. |
-| NumPy | 1.18.1 | `pip install numpy` | Used for scientific computing.|
+| numpy | 1.18.1 | `pip install numpy` | Used for scientific computing.|
 ## Data
 
 | Filename | Location | # posts |  % clickbait | Download link |
@@ -33,7 +33,7 @@ Percentage non-clickbait: 69.01179341195608
 ```
 
 ### Features
-| # &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Name          | Description                            |
+| # &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;    | Name          | Description                            |
 |-------|---------------|---------------------------------|
 | 1 | Image availability | Checks if post has an image available. |
 | 2 | Image text availability | Checks if a post image has text.   |
