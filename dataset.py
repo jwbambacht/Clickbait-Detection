@@ -399,7 +399,7 @@ class Element:
 
         return formal_ratio
 
-    # Feature 127 to 134
+    # Feature 128 to 134
     def __ratio_informal_words(self):
         formal_words = self.__num_of_formal_words()
         informal_words = self.__num_of_informal_words()
