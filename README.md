@@ -35,9 +35,24 @@ Percentage non-clickbait: 69.01179341195608
 ### Features
 | # | Name          | Description                            |
 |---|---------------|----------------------------------------|
-| 1 | `has_image()` | Checks if post has an image available. |
-| 2 | `has_image_text()`| Checks if a post image has text.   |
+| 1 | Image availability | Checks if post has an image available. |
+| 2 | Image text availability | Checks if a post image has text.   |
+| 3-9 | Length of article content | Counts amount of characters in the `post_title`, `media_text`, `target_title`, `target_description`, `target_keywords`, `target_captions` and `target_paragraphs` fields.| 
 
+To get the features, use `[small|big]_dataset.get_features()`:
+```bash
+ [  1.   1.  98. ... 129.   3.  36.]
+ [  0.   0.  89. ...   0.  16.   3.]
+ ...
+ [  1.   0.  65. ...   0.  34.   0.]
+ [  0.   0.  88. ... 131.  15.   5.]
+ [  1.   0.  57. ...   0.  11.   0.]]
+```
+It returns an `instances x features` matrix. Its loaded from a file by default, to regenerate this matrix use the `overwrite=True` flag.
+To retrieve the corresponding (target) labels, use `[small|big]_dataset.get_target_labels()`:
+```bash
+[0 0 1 ... 0 0 0]
+```
 
 ## PART 1:
 - [x] Read data
