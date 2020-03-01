@@ -42,7 +42,7 @@ Percentage non-clickbait: 69.01179341195608
 ## PART 1:
 - [x] Read data
 - [x] Feature extraction
-- [ ]Come up with new features (based on NLP theory)
+- [ ] Come up with new features (based on NLP theory)
 
 ## PART 2:
 - [ ] Train classifier(s) (which classifier is best and why)
