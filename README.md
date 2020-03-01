@@ -33,7 +33,7 @@ Percentage non-clickbait: 69.01179341195608
 ```
 
 ### Features
-| # &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;    | Name          | Description                            |
+| &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;    | Name          | Description                            |
 |:-------:|:---------------:|:---------------------------------:|
 | 1 | Image availability | Checks if post has an image available. |
 | 2 | Image text availability | Checks if a post image has text.   |
