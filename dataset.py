@@ -63,7 +63,7 @@ class Dataset:
     # Reads jsonl file.
     @staticmethod
     def read_data(file):
-        with open(file) as f:
+        with open(file, encoding="utf8") as f:
             for line in f:
                 yield json.loads(line)
 
