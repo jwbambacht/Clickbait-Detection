@@ -3,25 +3,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
+from resample import Resample
 
 # Import the small and big dataset.
 small_dataset = Dataset("datasets/small_training")
 big_dataset = Dataset("datasets/big_training")
 
 # Combine the two datasets
-all_features = np.r_[small_dataset.get_features(), big_dataset.get_features()]
-all_labels = np.r_[small_dataset.get_target_labels(), big_dataset.get_target_labels()]
-
-# Resample (undersampling)
-combined = np.c_[all_features, all_labels]
-no_clickbait = combined[combined[:, -1] == 0]
-clickbait = combined[combined[:, -1] == 1]
-nr_of_samples = np.size(clickbait, axis=0)
-ids = np.random.randint(np.size(no_clickbait, axis=0), size=nr_of_samples)
-no_clickbait_resampled = no_clickbait[ids, :]
-
-resampled_features = np.r_[clickbait[:, :-1], no_clickbait_resampled[:, :-1]]
-resampled_labels = np.r_[clickbait[:, -1], no_clickbait_resampled[:, -1]]
+resampled_features, resampled_labels = Resample.undersample(small_dataset, big_dataset)
 
 # Split the data into a train and test set
 X_train, X_test, y_train, y_test = train_test_split(resampled_features, resampled_labels, test_size=0.1, shuffle=True)
