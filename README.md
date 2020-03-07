@@ -6,6 +6,8 @@
 | pytesseract | 0.3.2   | `pip install pytesseract` | 'Reads' text embedded in images. This also requires tesseract to be installed on your system and in your PATH. This library is only used to annotate the images in `annotate_images.py`, results are already saved (see: `media_annotations.jsonl`).|
 | pyenchant | 2.0.0  | `pip install pyenchant`| Used to identify the formality of words. |
 | numpy | 1.18.1 | `pip install numpy` | Used for scientific computing.|
+| nltk | 3.4.5 | `pip install nltk` | NLP tools used to find features. |
+
 ## Data
 
 | Filename | Location | # posts |  % clickbait | Download link |

@@ -6,7 +6,6 @@ import enchant
 from operator import add
 import numpy as np
 
-
 # Stores a set of instances and its label (clickbait or not).
 class Dataset:
     def __init__(self, directory):
@@ -14,9 +13,11 @@ class Dataset:
         self.instances_file = directory + "/instances.jsonl"
         self.truth_file = directory + "/truth.jsonl"
         self.media_annotations_file = directory + "/media_annotations.jsonl"
+        self.polarity_annotations_file = directory + "/polarity_annotations.jsonl"
         self.elements = {}
         self.media_annotations = {}
         self.word_dict = {}
+        self.polarity_annotations = {}
 
         self.__load_instances()
         self.__build_dictionary()
@@ -32,17 +33,25 @@ class Dataset:
             self.elements[truth.element_id].set_truth(truth)
 
         # If media annotations don't exist, ignore it.
-        if not os.path.exists(self.media_annotations_file):
-            return
+        if os.path.exists(self.media_annotations_file):
+            # Add media annotations.
+            for m in self.read_data(self.media_annotations_file):
+                self.media_annotations[m["id"]] = m
 
-        # Add media annotations.
-        for m in self.read_data(self.media_annotations_file):
-            self.media_annotations[m["id"]] = m
+            # Make sure elements retrieve their own annotations.
+            for el in self.get_elements():
+                if len(el.post_media) > 0:
+                    el.set_image_annotations(self.media_annotations)
 
-        # Make sure elements retrieve their own annotations.
-        for el in self.get_elements():
-            if len(el.post_media) > 0:
-                el.set_image_annotations(self.media_annotations)
+        # If polarity annotations don't exist, ignore it.
+        if os.path.exists(self.polarity_annotations_file):
+            # Add polarity annotations.
+            for p in self.read_data(self.polarity_annotations_file):
+                self.polarity_annotations[p["id"]] = p
+
+            # Make sure elements retrieve their own annotations.
+            for el in self.get_elements():
+                el.set_polarity_annotation(self.polarity_annotations[el.element_id])
 
     def __build_dictionary(self):
         all_words = []
@@ -164,6 +173,7 @@ class Element:
         self.target_paragraphs = target_paragraphs
         self.target_captions = target_captions
         self.word_dict = {}
+        self.polarity_annotation = {}
         self.__truth = None
         self.__media_text_present = [False] * len(self.post_media)
         self.__media_text = [""] * len(self.post_media)
@@ -178,6 +188,10 @@ class Element:
             raise ValueError("Truth is not assigned (yet).")
 
         return self.__truth
+
+    # Sets polarity annotation.
+    def set_polarity_annotation(self, annotation):
+        self.polarity_annotation = annotation
 
     # Set an image annotation.
     def set_image_annotations(self, annotations):
@@ -449,6 +463,10 @@ class Element:
     def __num_of_captions(self):
         return len(self.target_captions)
 
+    # Feature 142
+    def __compound_polarity(self):
+        return self.polarity_annotation["compound"]
+
     # END - FEATURE EXTRACTION
 
     # Get features as numpy array.
@@ -487,6 +505,7 @@ class Element:
                 self.__num_of_keywords(),
                 self.__num_of_paragraphs(),
                 self.__num_of_captions(),
+                self.__compound_polarity()
             ]
         )
 
