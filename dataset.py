@@ -104,8 +104,8 @@ class Dataset:
         )
 
     # Get features of the whole dataset.
-    def get_features(self, overwrite=False):
-        path = self.directory + "/features.npy"
+    def get_features(self, overwrite=False, filename="features.npy"):
+        path = self.directory + f"/{filename}"
         if os.path.exists(path) and not overwrite:
             print(
                 "Loading from file! If you want to overwrite the features, use overwrite = True."
@@ -464,8 +464,16 @@ class Element:
         return len(self.target_captions)
 
     # Feature 142
-    def __compound_polarity(self):
-        return self.polarity_annotation["compound"]
+    def __positive_sentiment(self):
+        return self.polarity_annotation["pos"]
+
+    # Feature 143
+    def __negative_sentiment(self):
+        return self.polarity_annotation["neg"]
+
+    # Feature 144
+    def __neutral_sentiment(self):
+        return self.polarity_annotation["neu"]
 
     # END - FEATURE EXTRACTION
 
@@ -505,7 +513,9 @@ class Element:
                 self.__num_of_keywords(),
                 self.__num_of_paragraphs(),
                 self.__num_of_captions(),
-                self.__compound_polarity()
+                self.__positive_sentiment(),
+                self.__negative_sentiment(),
+                self.__neutral_sentiment()
             ]
         )
 
