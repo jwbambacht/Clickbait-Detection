@@ -539,6 +539,7 @@ class Element:
                 self.__num_of_paragraphs(),
                 self.__num_of_captions(),
                 self.__polarity(),
+                self.__formality_score(),
                 self.__starts_with_digit()
             ]
         )
