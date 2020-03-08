@@ -14,10 +14,12 @@ class Dataset:
         self.truth_file = directory + "/truth.jsonl"
         self.media_annotations_file = directory + "/media_annotations.jsonl"
         self.polarity_annotations_file = directory + "/polarity_annotations.jsonl"
+        self.formality_annotations_file = directory + "/formality_annotations.jsonl"
         self.elements = {}
         self.media_annotations = {}
         self.word_dict = {}
         self.polarity_annotations = {}
+        self.formality_annotations = {}
 
         self.__load_instances()
         self.__build_dictionary()
@@ -52,6 +54,16 @@ class Dataset:
             # Make sure elements retrieve their own annotations.
             for el in self.get_elements():
                 el.set_polarity_annotation(self.polarity_annotations[el.element_id])
+
+        # If formality annotations don't exist, ignore it.
+        if os.path.exists(self.formality_annotations_file):
+            # Add formality annotations.
+            for f in self.read_data(self.formality_annotations_file):
+                self.formality_annotations[f["id"]] = f
+
+            # Make sure elements retrieve their own annotations.
+            for el in self.get_elements():
+                el.set_formality_annotation(self.formality_annotations[el.element_id])
 
     def __build_dictionary(self):
         all_words = []
@@ -174,6 +186,7 @@ class Element:
         self.target_captions = target_captions
         self.word_dict = {}
         self.polarity_annotation = {}
+        self.formality_annotation = {}
         self.__truth = None
         self.__media_text_present = [False] * len(self.post_media)
         self.__media_text = [""] * len(self.post_media)
@@ -192,6 +205,10 @@ class Element:
     # Sets polarity annotation.
     def set_polarity_annotation(self, annotation):
         self.polarity_annotation = annotation
+
+    # Sets formality annotation.
+    def set_formality_annotation(self, annotation):
+        self.formality_annotation = annotation
 
     # Set an image annotation.
     def set_image_annotations(self, annotations):
@@ -463,17 +480,25 @@ class Element:
     def __num_of_captions(self):
         return len(self.target_captions)
 
-    # Feature 142
-    def __positive_sentiment(self):
-        return self.polarity_annotation["pos"]
+    # Feature 142-144
+    def __polarity(self):
+        return [self.polarity_annotation["post_text_compound"], self.polarity_annotation["target_title_compound"], self.polarity_annotation["target_paragraphs_compound"]]
 
-    # Feature 143
-    def __negative_sentiment(self):
-        return self.polarity_annotation["neg"]
+    # Feature 145-146
+    def __starts_with_digit(self):
+        title = 0
+        target = 0
 
-    # Feature 144
-    def __neutral_sentiment(self):
-        return self.polarity_annotation["neu"]
+        if len(" ".join(self.post_text)) > 0 and " ".join(self.post_text)[0].isdigit():
+            title = 1
+
+        if len(self.target_title) > 0 and self.target_title[0].isdigit():
+            target = 1
+
+        return [title, target]
+
+    def __formality_score(self):
+        return [self.formality_annotation["post_text_formality"], self.formality_annotation["target_paragraphs_formality"]]
 
     # END - FEATURE EXTRACTION
 
@@ -513,9 +538,8 @@ class Element:
                 self.__num_of_keywords(),
                 self.__num_of_paragraphs(),
                 self.__num_of_captions(),
-                self.__positive_sentiment(),
-                self.__negative_sentiment(),
-                self.__neutral_sentiment()
+                self.__polarity(),
+                self.__starts_with_digit()
             ]
         )
 
@@ -597,7 +621,6 @@ class Element:
             self.__target_captions_word_count,
             self.__target_paragraphs_word_count,
         ]
-
     # Print this element.
     def pretty_print(self, verbose=False):
         print("-- Element --")

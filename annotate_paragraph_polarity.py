@@ -16,16 +16,14 @@ def annotate_polarity(folder):
         print(f"{progress}/{len(dataset.get_elements())}")
         annotation = {}
 
-        vs = analyzer.polarity_scores(" ".join(element.target_paragraphs))
-
-        # Retrieve annotation information
         annotation["id"] = element.element_id
-        annotation["pos"] = vs["pos"]
-        annotation["neg"] = vs["neg"]
-        annotation["neu"] = vs["neu"]
-        annotation["compound"] = vs["compound"]
 
-        annotations.append(annotation)
+        for (tag, el) in [("post_text", " ".join(element.post_text)), ("target_title", element.target_title), ("target_paragraphs", " ".join(element.target_paragraphs))]:
+            vs = analyzer.polarity_scores(el)
+
+            # Retrieve annotation information
+            annotation[f"{tag}_compound"] = vs["compound"]
+            annotations.append(annotation)
 
     f = open(folder + "/polarity_annotations.jsonl", "w+")
 
@@ -36,4 +34,5 @@ def annotate_polarity(folder):
     f.close()
 
 
+annotate_polarity("datasets/small_training")
 annotate_polarity("datasets/big_training")
