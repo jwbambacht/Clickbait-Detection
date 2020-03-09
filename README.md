@@ -55,6 +55,9 @@ Percentage non-clickbait: 69.01179341195608
 | 137 | Amount of retweet symbols. | Computes the amount of `RT` and `retweet` symbols in the complete post. | 
 | 138 | Amount of additional symbols. | Computes the amount of additional symbols: `?`, `,`, `:` and `...` in the complete post. |
 | 139-141 | Amount of keywords/paragraphs/captions | Computes the amount of keywords, paragraphs and captions in the post. |
+| 142-144| Polarity scores.| Computes the polarity scores (== sentiment) for `post_text`, `target_title` and `target_paragraphs` fields. |
+| 145-146| Starts with number.| Checks if the `target_title` and `post_text` start with a number `10 Best Ways To Blablaa`. |
+| 147-148| Formality scores. | Checks how formal the `post_text` and the `target_paragraphs` are. |
 
 To get the features, use `[small|big]_dataset.get_features()`:
 ```bash
