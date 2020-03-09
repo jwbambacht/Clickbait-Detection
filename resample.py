@@ -13,6 +13,7 @@ class Resample:
         no_clickbait = combined[combined[:, -1] == 0]
         clickbait = combined[combined[:, -1] == 1]
         nr_of_samples = np.size(clickbait, axis=0)
+        np.random.seed(seed=42)
         ids = np.random.randint(np.size(no_clickbait, axis=0), size=nr_of_samples)
         no_clickbait_resampled = no_clickbait[ids, :]
 

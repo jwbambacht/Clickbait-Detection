@@ -1,6 +1,6 @@
 from dataset import Dataset
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
 from resample import Resample
@@ -17,7 +17,7 @@ resampled_features, resampled_labels = Resample.undersample(small_dataset, big_d
 
 
 # Split the data into a train and test set
-X_train, X_test, y_train, y_test = train_test_split(resampled_features, resampled_labels, test_size=0.1, shuffle=True)
+X_train, y_train = shuffle(resampled_features, resampled_labels, random_state=42)
 
 # Create the classifier
 clf = RandomForestClassifier()
@@ -59,6 +59,7 @@ for train_index, test_index in kf.split(X_train):
 
     i += 1
 
+"""
 truth = y_test
 pred = clf.predict(X_test)
 data = np.vstack((truth,pred)).T
@@ -78,3 +79,4 @@ plt.ylim(0.0, 1.0)
 plt.legend(fontsize=12, loc='lower right')
 plt.tight_layout()
 plt.savefig("auc-roc")
+"""
