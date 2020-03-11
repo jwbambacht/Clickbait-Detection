@@ -73,20 +73,3 @@ To retrieve the corresponding (target) labels, use `[small|big]_dataset.get_targ
 ```bash
 [0 0 1 ... 0 0 0]
 ```
-
-## PART 1:
-- [x] Read data
-- [x] Feature extraction
-- [ ] Come up with new features (based on NLP theory)
-
-## PART 2:
-- [ ] Train classifier(s) (which classifier is best and why)
-- [ ] Explain potential overfitting
-- [ ] Explain potential bias
-- [ ] How do we deal with bias and overfitting?
-- [ ] Cross-validation why (not)?
-## PART 3:
-- [ ] Evaluate results
-- [ ] Which metrics are (not) useful?
-- [ ] Which conclusions can we (not) make?
-- [ ] Maybe give some further recommendations on how to improve? (Like more data, different ML techniques etc.)
