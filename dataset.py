@@ -116,7 +116,7 @@ class Dataset:
         )
 
     # Get features of the whole dataset.
-    def get_features(self, overwrite=False, filename="features.npy"):
+    def get_features(self, overwrite=False, filename="features_original.npy"):
         path = self.directory + f"/{filename}"
         if os.path.exists(path) and not overwrite:
             print(
